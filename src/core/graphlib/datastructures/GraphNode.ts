@@ -1,4 +1,7 @@
-class GraphNode {
+
+
+
+export class GraphNode {
     value: number;
     visited:boolean;
     weighted: boolean;
@@ -6,7 +9,7 @@ class GraphNode {
     neighbours: GraphNode[];
     weightValue: number;
 
-    constructor(value: number, visited: boolean, weighted: boolean, parent: GraphNode, neighbourNodes: GraphNode[], weightValue: number) {
+    constructor(value: number, visited: boolean, weighted: boolean, parent: GraphNode|null, neighbourNodes: GraphNode[], weightValue: number) {
         this.value = value;
         this.visited = visited;
         this.weighted = weighted;

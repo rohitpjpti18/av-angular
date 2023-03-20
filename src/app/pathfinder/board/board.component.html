@@ -1,9 +1,8 @@
-<div style="padding: 0.5%; width: 99%; height:95%; position: fixed;" #boardContainer>
+<div style="padding: 0.5%; width: 99%; height:95%; position: fixed;" #boardContainer id = 'boardContainer'>
     <div>
         <table >
-            <tr #cellId *ngFor="let row of rows; let i = index;">
-                <td  [id]="(i*columns.length)+j" [style.background]="cells[i+j].color" *ngFor="let col of columns; let j = index"  >
-                    <span ></span>
+            <tr *ngFor="let row of rows; let i = index;">
+                <td appNode [style.background]="cells[i+j].color" *ngFor="let col of columns; let j = index"  >
                 </td>
             </tr>
         </table>
