@@ -1,1 +1,16 @@
-<p>board works!</p>
+<div style="padding: 0.5%; width: 99%; height:95%; position: fixed;" #boardContainer>
+    <div>
+        <table >
+            <tr #cellId *ngFor="let row of rows; let i = index;">
+                <td  [id]="(i*columns.length)+j" [style.background]="cells[i+j].color" *ngFor="let col of columns; let j = index"  >
+                    <span ></span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+</div>
+
+
+
+
