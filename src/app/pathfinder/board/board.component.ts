@@ -1,6 +1,7 @@
 import { Component, ContentChildren, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { pathfinder } from 'src/core/ngrx/menuoptions/menuoptions.actions';
+import { NodeDirective } from './node.directive';
 
 export class CellProperty {
   row: number
@@ -30,8 +31,8 @@ export class BoardComponent {
 
   
 
-  @ViewChildren('cell')
-  cellReferences!: QueryList<ElementRef>;
+  @ViewChildren('appNode')
+  cellReferences!: QueryList<NodeDirective>;
 
   constructor(private store: Store<{menuOption: {algorithms: string[], mazePattern: string[]}}>) {
     this.rows = [];
@@ -41,7 +42,8 @@ export class BoardComponent {
   }
 
   ngAfterViewInit() {
-    this.cellReferences.forEach(cell => this.addEventListener(cell));
+    console.log(this.cellReferences)
+    //this.cellReferences.forEach(cell => this.addEventListener(cell));
   }
 
   ngOnInit() {

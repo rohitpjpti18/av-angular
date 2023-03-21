@@ -1,3 +1,5 @@
+import { Graph } from "../datastructures/Graph";
+import { GraphNode } from "../datastructures/GraphNode";
 import Queue from "../datastructures/Queue";
 
 class GraphAlgorithmsImpl{ 

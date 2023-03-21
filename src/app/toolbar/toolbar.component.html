@@ -1,11 +1,15 @@
 <mat-toolbar>
     <img src = '../../assets/testimage.ico' height="93"/>
-    <button routerLink="/pathfinder" mat-button class="example-icon" aria-label="Example icon-button with heart icon">
-        PathFinder
-    </button>
-    <button mat-button class="example-icon" aria-label="Example icon-button with heart icon">
-        Sorting Visualiser
-    </button>
+    <button mat-button [matMenuTriggerFor]="application">Select an application</button>
+    <mat-menu #application>
+        <button routerLink="/pathfinder" mat-menu-item class="example-icon" aria-label="Example icon-button with heart icon">
+            PathFinder
+        </button>
+        <button mat-menu-item  class="example-icon" aria-label="Example icon-button with heart icon">
+            Sorting Visualiser
+        </button>
+    </mat-menu>
+
 
     <div *ngIf="algorithmMenu != []">
     <button mat-button [matMenuTriggerFor]="menu">Select an Algorithms</button>

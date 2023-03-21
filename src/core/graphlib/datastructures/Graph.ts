@@ -1,4 +1,7 @@
-class Graph {
+import { GraphNode } from "./GraphNode"
+import { GraphUndirectedEdge } from "./GraphUndirectedEdge"
+
+export class Graph {
     nodes: GraphNode[]
     edges: GraphUndirectedEdge[]
     visitedNodes: GraphNode[]

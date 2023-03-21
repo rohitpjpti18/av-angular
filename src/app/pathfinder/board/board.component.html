@@ -2,7 +2,7 @@
     <div>
         <table >
             <tr *ngFor="let row of rows; let i = index;">
-                <td appNode [style.background]="cells[i+j].color" *ngFor="let col of columns; let j = index"  >
+                <td [id]="(i*columns.length)+j" appNode *ngFor="let col of columns; let j = index"  >
                 </td>
             </tr>
         </table>
