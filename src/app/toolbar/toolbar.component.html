@@ -1,11 +1,11 @@
 <mat-toolbar>
-    <img src = '../../assets/testimage.ico' height="93"/>
-    <button mat-button [matMenuTriggerFor]="application">Select an application</button>
+    <img src = '../../assets/testimage.ico' height="93" routerLink="/"/>
+    <button mat-button [matMenuTriggerFor]="application">{{selectedApplication}}</button>
     <mat-menu #application>
-        <button routerLink="/pathfinder" mat-menu-item class="example-icon" aria-label="Example icon-button with heart icon">
-            PathFinder
+        <button routerLink="/pathfinder" (click)="onClickHandler($event)" mat-menu-item class="example-icon" aria-label="Example icon-button with heart icon">
+            Path Finder
         </button>
-        <button mat-menu-item  class="example-icon" aria-label="Example icon-button with heart icon">
+        <button routerLink="/" mat-menu-item (click)="onClickHandler($event)"  class="example-icon" aria-label="Example icon-button with heart icon">
             Sorting Visualiser
         </button>
     </mat-menu>
@@ -16,7 +16,7 @@
         <mat-menu #menu="matMenu">
             <button mat-menu-item *ngFor="let item of algorithmMenu" >
                 <!--<mat-icon>{{ item }}</mat-icon>-->
-                <span> {{ item }}</span>
+                 {{ item }}
             </button>
         </mat-menu>
     </div>

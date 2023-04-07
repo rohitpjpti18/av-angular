@@ -3,19 +3,6 @@ import { Store } from '@ngrx/store';
 import { pathfinder } from 'src/core/ngrx/menuoptions/menuoptions.actions';
 import { NodeDirective } from './node.directive';
 
-export class CellProperty {
-  row: number
-  column: number
-  color: string|null;
-  isSource: boolean = false;
-  isDestination: boolean = false;
-
-  constructor(row:number, column:number, color:string) {
-    this.row = row
-    this.column = column
-    this.color = color;
-  }
-}
 
 @Component({
   selector: 'app-board',
@@ -25,24 +12,20 @@ export class CellProperty {
 export class BoardComponent {
   rows:number[]
   columns:number[] 
-  cells: CellProperty[]
   cell: string
-
-
   
 
   @ViewChildren('appNode')
   cellReferences!: QueryList<NodeDirective>;
 
   constructor(private store: Store<{menuOption: {algorithms: string[], mazePattern: string[]}}>) {
-    this.rows = [];
-    this.columns = [];
-    this.cells = []
+    this.rows = []
+    this.columns = []
     this.cell = 'cell'
   }
 
   ngAfterViewInit() {
-    console.log(this.cellReferences)
+    //console.log(this.cellReferences)
     //this.cellReferences.forEach(cell => this.addEventListener(cell));
   }
 
@@ -66,7 +49,7 @@ export class BoardComponent {
   
       for(let i = 0; i<this.rows.length; i++) {
         for(let j = 0; j<this.columns.length; j++) {
-          this.cells.push(new CellProperty(i, j, ''))
+          //this.cells.push(new CellProperty(i, j, ''))
         }
       }
     }
@@ -83,7 +66,7 @@ export class BoardComponent {
 
   mouseDownHandler(event:Event) {
     event.preventDefault()
-    console.log("clicked here")
+    //console.log("clicked here")
   }
 
 

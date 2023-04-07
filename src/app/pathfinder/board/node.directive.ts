@@ -13,7 +13,7 @@ export class NodeDirective {
   constructor(private el:ElementRef) { 
     this.color = 'blue'
     this.graphNode.isWall = false
-    console.log(el.nativeElement)
+    //console.log(el.nativeElement)
   }
 
   @HostListener('mousedown')
