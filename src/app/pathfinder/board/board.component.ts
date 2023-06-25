@@ -2,6 +2,9 @@ import { Component, ContentChildren, ElementRef, QueryList, ViewChild, ViewChild
 import { Store } from '@ngrx/store';
 import { pathfinder } from 'src/core/ngrx/menuoptions/menuoptions.actions';
 import { NodeDirective } from './node.directive';
+import { Graph } from 'src/core/graphlib/datastructures/Graph';
+import { GraphUndirectedEdge } from 'src/core/graphlib/datastructures/GraphUndirectedEdge';
+import { GraphNode } from 'src/core/graphlib/datastructures/GraphNode';
 
 
 @Component({
@@ -13,10 +16,9 @@ export class BoardComponent {
   rows:number[]
   columns:number[] 
   cell: string
-  
 
-  @ViewChildren('appNode')
-  cellReferences!: QueryList<NodeDirective>;
+  @ViewChildren(NodeDirective)
+  nodes: QueryList<NodeDirective>|undefined
 
   constructor(private store: Store<{menuOption: {algorithms: string[], mazePattern: string[]}}>) {
     this.rows = []
@@ -25,8 +27,7 @@ export class BoardComponent {
   }
 
   ngAfterViewInit() {
-    //console.log(this.cellReferences)
-    //this.cellReferences.forEach(cell => this.addEventListener(cell));
+  
   }
 
   ngOnInit() {
@@ -55,20 +56,7 @@ export class BoardComponent {
     }
     this.store.dispatch(pathfinder()) 
 
-
-    //
   }
-
-
-  addEventListener(cell:ElementRef) {
-    cell.nativeElement.addEventListener('click', this.mouseDownHandler.bind(this)) 
-  }
-
-  mouseDownHandler(event:Event) {
-    event.preventDefault()
-    //console.log("clicked here")
-  }
-
 
   ngOnChanges() {
 

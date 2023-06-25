@@ -2,14 +2,14 @@ import { GraphNode } from "./GraphNode"
 import { GraphUndirectedEdge } from "./GraphUndirectedEdge"
 
 export class Graph {
-    nodes: GraphNode[]
+    nodes: Array<GraphNode|undefined>
     edges: GraphUndirectedEdge[]
     visitedNodes: GraphNode[]
     pathNodes: GraphNode[]
-    source: GraphNode
-    destination: GraphNode
+    source: GraphNode|null
+    destination: GraphNode|null
 
-    constructor(nodes: GraphNode[], edges: GraphUndirectedEdge[], source: GraphNode, destination: GraphNode) {
+    constructor(nodes: Array<GraphNode|undefined>, edges: GraphUndirectedEdge[], source: GraphNode|null, destination: GraphNode|null) {
         this.edges = edges
         this.nodes = nodes
         this.source = source

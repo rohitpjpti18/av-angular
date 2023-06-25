@@ -1,5 +1,7 @@
-import { Directive, ElementRef, Host, HostListener } from '@angular/core';
+import { Directive, ElementRef, Host, HostListener, QueryList, ViewChildren } from '@angular/core';
+import { Graph } from 'src/core/graphlib/datastructures/Graph';
 import { GraphNode } from 'src/core/graphlib/datastructures/GraphNode';
+import { GraphUndirectedEdge } from 'src/core/graphlib/datastructures/GraphUndirectedEdge';
 
 @Directive({
   selector: '[appNode]'
@@ -7,14 +9,22 @@ import { GraphNode } from 'src/core/graphlib/datastructures/GraphNode';
 export class NodeDirective {
   static isClicked = false
   static isProcessing = false
-  graphNode: GraphNode = new GraphNode(-1, false, false, null, [], 1)
+  static graph:Graph = new Graph(new Array<GraphNode>(), new Array<GraphUndirectedEdge>(), null, null)
+  graphNode: GraphNode
   color: String
+
 
   constructor(private el:ElementRef) { 
     this.color = 'blue'
+    this.graphNode = new GraphNode(el.nativeElement.id, -1, false, false, null, [], 1)
     this.graphNode.isWall = false
-    //console.log(el.nativeElement)
   }
+
+  ngAfterViewInit() {
+    this.graphNode.id = this.el.nativeElement.id
+    NodeDirective.graph.nodes.push(this.graphNode)
+  }
+
 
   @HostListener('mousedown')
   mouseDownHandler() {
@@ -50,7 +60,5 @@ export class NodeDirective {
       this.el.nativeElement.style.backgroundColor = ''
       this.el.nativeElement.style.borderColor = '#f5dec6'
     }
-
   }
-
 }
