@@ -15,6 +15,7 @@ import { MatMenuModule } from '@angular/material/menu'
 
 import { StoreModule } from '@ngrx/store'
 import { menuOptionReducer } from 'src/core/ngrx/menuoptions/menuoptions.reducer';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { menuOptionReducer } from 'src/core/ngrx/menuoptions/menuoptions.reducer
     ToolbarComponent
   ],
   imports: [
+    FormsModule,
     BrowserModule,
     AppRoutingModule,
     PathfinderModule,

@@ -27,7 +27,8 @@ export class BoardComponent {
   }
 
   ngAfterViewInit() {
-  
+    NodeDirective.row = this.rows.length
+    NodeDirective.col = this.columns.length
   }
 
   ngOnInit() {
@@ -47,12 +48,6 @@ export class BoardComponent {
   
       for(let i = 0; i<temp2; i++) this.rows.push(i);
       for(let i = 0; i<temp1; i++) this.columns.push(i);
-  
-      for(let i = 0; i<this.rows.length; i++) {
-        for(let j = 0; j<this.columns.length; j++) {
-          //this.cells.push(new CellProperty(i, j, ''))
-        }
-      }
     }
     this.store.dispatch(pathfinder()) 
 

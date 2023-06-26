@@ -2,8 +2,8 @@ import { Graph } from "../datastructures/Graph";
 import { GraphNode } from "../datastructures/GraphNode";
 import Queue from "../datastructures/Queue";
 
-class GraphAlgorithmsImpl{ 
-    
+export class GraphAlgorithmsImpl{ 
+    /*
     public static breadthFirstSearch(graph: Graph) {
         let q:Queue<GraphNode> = new Queue()
         graph.source.visited = true
@@ -29,7 +29,7 @@ class GraphAlgorithmsImpl{
                 }
             }
         }
-    }
+    }*/
 
     static dfs(graph: Graph) {
 

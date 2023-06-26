@@ -9,14 +9,19 @@ import { GraphUndirectedEdge } from 'src/core/graphlib/datastructures/GraphUndir
 export class NodeDirective {
   static isClicked = false
   static isProcessing = false
+  static col: number
+  static row: number
+  static source: number
+  static destination: number
   static graph:Graph = new Graph(new Array<GraphNode>(), new Array<GraphUndirectedEdge>(), null, null)
   graphNode: GraphNode
   color: String
 
 
+
   constructor(private el:ElementRef) { 
     this.color = 'blue'
-    this.graphNode = new GraphNode(el.nativeElement.id, -1, false, false, null, [], 1)
+    this.graphNode = new GraphNode(el.nativeElement.id, -1, false, false, null, [], 1, this.el)
     this.graphNode.isWall = false
   }
 
@@ -42,6 +47,7 @@ export class NodeDirective {
 
   @HostListener('mouseenter')
   mouseEnterHandler() {
+    if(NodeDirective.isProcessing) return
     if(NodeDirective.isClicked) {
       this.graphNode.isWall = !this.graphNode.isWall
     }
@@ -61,4 +67,6 @@ export class NodeDirective {
       this.el.nativeElement.style.borderColor = '#f5dec6'
     }
   }
+
+
 }

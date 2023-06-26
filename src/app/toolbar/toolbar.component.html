@@ -1,6 +1,6 @@
 <mat-toolbar>
     <img src = '../../assets/testimage.ico' height="93" routerLink="/"/>
-    <button mat-button [matMenuTriggerFor]="application">{{selectedApplication}}</button>
+    <button mat-flat-button color="primary" [matMenuTriggerFor]="application">{{selectedApplication}}</button>
     <mat-menu #application>
         <button routerLink="/pathfinder" (click)="onClickHandler($event)" mat-menu-item class="example-icon" aria-label="Example icon-button with heart icon">
             Path Finder
@@ -15,7 +15,6 @@
     <button mat-button [matMenuTriggerFor]="menu">Select an Algorithms</button>
         <mat-menu #menu="matMenu">
             <button (click)="mazeAlgorithm($event)" mat-menu-item *ngFor="let item of algorithmMenu" >
-                <!--<mat-icon>{{ item }}</mat-icon>-->
                  {{ item }}
             </button>
         </mat-menu>
@@ -31,13 +30,9 @@
     </div>
     
     <span class="example-spacer"></span>
-    <span style="font-size:medium">Speed &nbsp;</span>
-    <mat-slider min="1" max="5" step="0.5" value="1.5">
-        <input matSliderThumb>
+    <span style="font-size:small">Speed &nbsp;</span>
+    <mat-slider min="10" max="50" step="1" >
+        <input matSliderThumb [(ngModel)]="colorNode.speed">
     </mat-slider>
-
-    <span style="font-size:medium"> &nbsp; Size &nbsp;</span>
-    <mat-slider min="1" max="5" step="0.5" value="1.5">
-        <input matSliderThumb>
-    </mat-slider>
+    <button mat-flat-button color="warn" (click)="resetBoard()">Reset Board</button>
 </mat-toolbar>
