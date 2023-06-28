@@ -2,11 +2,13 @@ import { ElementRef } from "@angular/core";
 import { GraphNode } from "../graphlib/datastructures/GraphNode";
 
 export class ColorNode {
+
+    // #6b44bc
     speed: number = 24;
     defaultColor: string = ``;
-    defaultBorderColor: string = `#f5dec6`;
-    wallColor: string = "#543e33";
-    wallBorderColor: string = `#543e33`;
+    defaultBorderColor: string = `#d8d1e8`;
+    wallColor: string = "#36235e";
+    wallBorderColor: string = `#36235e`;
     visitedColor: string = "#96daeb";
     pathColor: string = "#f5da7a";
 

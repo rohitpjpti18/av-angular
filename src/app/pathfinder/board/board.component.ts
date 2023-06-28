@@ -29,6 +29,8 @@ export class BoardComponent {
   ngAfterViewInit() {
     NodeDirective.row = this.rows.length
     NodeDirective.col = this.columns.length
+    NodeDirective.graph.colLen = this.columns.length
+    NodeDirective.graph.rowLen = this.rows.length
   }
 
   ngOnInit() {

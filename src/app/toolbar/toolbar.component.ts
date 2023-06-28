@@ -23,6 +23,7 @@ export class ToolbarComponent {
   constructor(private store: Store<{menuOption: {algorithms: string[], mazePattern: string[]}}>) {
     this.selectedApplication = "Select an Application"
     this.colorNode = new ColorNode()
+    NodeDirective.colorNode = this.colorNode
     store.pipe(select('menuOption')).subscribe(data => {
       this.algorithmMenu = data.algorithms
       this.mazeMenu = data.mazePattern
@@ -45,6 +46,7 @@ export class ToolbarComponent {
   async mazeAlgorithm(event: MouseEvent) {
     const element = event.target as HTMLButtonElement;
     NodeDirective.isProcessing = true
+    NodeDirective.graph.reset(this.colorNode)
     if(element.innerText === `Recursive division`) {
       MazeAlgorithmsImpl.recursiveDivisionMaze(NodeDirective.graph, NodeDirective.col, NodeDirective.row, NodeDirective.source, NodeDirective.destination);
       for(let i = 0; i< NodeDirective.graph.wallNodes.length; i++) {
