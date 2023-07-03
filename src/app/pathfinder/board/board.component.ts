@@ -31,6 +31,9 @@ export class BoardComponent {
     NodeDirective.col = this.columns.length
     NodeDirective.graph.colLen = this.columns.length
     NodeDirective.graph.rowLen = this.rows.length
+    NodeDirective.computeStartAndEnd()
+    NodeDirective.start.el.nativeElement.innerHTML = `<i class="fa fa-solid fa-chevron-right" style="font-size: 10px;"></i>`
+    NodeDirective.end.el.nativeElement.innerHTML = `<i class="fa fa-solid fa-bullseye" style="font-size: 10px;"></i>`
   }
 
   ngOnInit() {
