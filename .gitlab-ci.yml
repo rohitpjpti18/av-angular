@@ -1,0 +1,14 @@
+image: node:18:16:0
+pages:
+  cache:
+    paths:
+      - node_modules/
+  script:
+    - npm install -g @angular/cli
+    - npm install 
+    - npm run gitlabDeploy
+  artifacts:
+    paths:
+      - dist/pathfinder-visualizer
+  only:
+    - main
