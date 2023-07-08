@@ -7,7 +7,6 @@ pages:
     - npm install -g @angular/cli
     - npm install 
     - npm run gitlabBuild
-    - npm run gitlabDeploy
   artifacts:
     paths:
       - public
