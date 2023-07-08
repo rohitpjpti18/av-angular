@@ -6,9 +6,10 @@ pages:
   script:
     - npm install -g @angular/cli
     - npm install 
+    - npm run gitlabBuild
     - npm run gitlabDeploy
   artifacts:
     paths:
-      - dist/pathfinder-visualizer
+      - public
   only:
     - main
