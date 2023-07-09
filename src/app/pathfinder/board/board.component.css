@@ -4,6 +4,13 @@ table{
     /*border: 0.5px solid #c5e2db;*/
 }
 
+.example-spacer {
+    flex: 1 1 auto;
+  }
+
+mat-slider {
+  width: 100px;
+}
 
 .small-box{
     display: inline-block;
@@ -26,7 +33,8 @@ th, td{
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
     border: 0.5px solid #d8d1e8;
-    padding: 0px;
+    padding: 0%;
+    margin: 0%;
     height: 24px;
     width: 24px;
 }

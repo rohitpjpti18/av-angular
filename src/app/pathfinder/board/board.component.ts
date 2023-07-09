@@ -1,10 +1,9 @@
 import { Component, ContentChildren, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { pathfinder } from 'src/core/ngrx/menuoptions/menuoptions.actions';
 import { NodeDirective } from './node.directive';
-import { Graph } from 'src/core/graphlib/datastructures/Graph';
-import { GraphUndirectedEdge } from 'src/core/graphlib/datastructures/GraphUndirectedEdge';
-import { GraphNode } from 'src/core/graphlib/datastructures/GraphNode';
+import { ColorNode } from 'src/core/animate/ColorNode';
+import { MazeAlgorithmsImpl } from 'src/core/graphlib/algorithms/MazeAlgorithmsImpl';
 
 
 @Component({
@@ -16,6 +15,11 @@ export class BoardComponent {
   rows:number[]
   columns:number[] 
   cell: string
+    
+  algorithmMenu: string[] = []
+  mazeMenu: string[] = []
+  selectedApplication: any;
+  colorNode: ColorNode
 
   @ViewChildren(NodeDirective)
   nodes: QueryList<NodeDirective>|undefined
@@ -24,6 +28,13 @@ export class BoardComponent {
     this.rows = []
     this.columns = []
     this.cell = 'cell'
+    this.selectedApplication = "Select an Application"
+    this.colorNode = new ColorNode()
+    NodeDirective.colorNode = this.colorNode
+    store.pipe(select('menuOption')).subscribe(data => {
+      this.algorithmMenu = data.algorithms
+      this.mazeMenu = data.mazePattern
+    });
   }
 
   ngAfterViewInit() {
@@ -32,12 +43,11 @@ export class BoardComponent {
     NodeDirective.graph.colLen = this.columns.length
     NodeDirective.graph.rowLen = this.rows.length
     NodeDirective.computeStartAndEnd()
-    NodeDirective.start.el.nativeElement.innerHTML = `<i class="fa fa-solid fa-chevron-right" style="font-size: 10px;"></i>`
-    NodeDirective.end.el.nativeElement.innerHTML = `<i class="fa fa-solid fa-bullseye" style="font-size: 10px;"></i>`
+    NodeDirective.start.el.nativeElement.innerHTML = `S`
+    NodeDirective.end.el.nativeElement.innerHTML = `O`
   }
 
   ngOnInit() {
-
     let board = document.getElementById('boardContainer')
     let width = board?.offsetWidth;
     let height = board?.offsetHeight;
@@ -60,5 +70,29 @@ export class BoardComponent {
 
   ngOnChanges() {
 
+  }
+
+  onClickHandler($event: Event) {
+    const input = $event.target as HTMLElement;
+    this.selectedApplication = input.innerText;
+  }
+
+  resetBoard() {
+    NodeDirective.reset(this.colorNode)
+  }
+
+  async mazeAlgorithm(event: MouseEvent) {
+    const element = event.target as HTMLButtonElement;
+    NodeDirective.isProcessing = true
+    NodeDirective.reset(this.colorNode)
+    if(element.innerText === `Recursive division`) {
+      let walls:Array<number> = MazeAlgorithmsImpl.recursiveDivisionMaze(NodeDirective.graph, NodeDirective.col, NodeDirective.row, NodeDirective.start.id, NodeDirective.end.id);
+      for(let i = 0; i< walls.length; i++) {
+        if(this.nodes !== undefined)
+          NodeDirective.setWall(NodeDirective.graph.nodes[walls[i]].id);
+          await this.colorNode.setColor(NodeDirective.graph.nodes[walls[i]], NodeDirective.graph.nodes[walls[i]].getHTMLElement() )
+      }
+    }
+    NodeDirective.isProcessing = false
   }
 }
