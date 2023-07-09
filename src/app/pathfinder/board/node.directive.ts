@@ -219,10 +219,7 @@ export class NodeDirective {
         this.el.nativeElement.innerHTML = NodeDirective.endIcon()
         NodeDirective.end = this.graphNode;
       }
-      
     }
-
-
     NodeDirective.colorNode.setColor(this.graphNode, this.el)
   }
 
