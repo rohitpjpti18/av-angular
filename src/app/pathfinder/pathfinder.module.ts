@@ -13,7 +13,8 @@ import { StoreModule } from '@ngrx/store';
 import { menuOptionReducer } from 'src/core/ngrx/menuoptions/menuoptions.reducer';
 
 const pathfinderRoutes: Routes = [
-  {path: 'pathfinder', component: BoardComponent}
+  {path: 'pathfinder', component: BoardComponent},
+  {path: '', component: BoardComponent}
 ];
 
 @NgModule({
