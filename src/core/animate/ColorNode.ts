@@ -24,6 +24,7 @@ export class ColorNode {
         if(node && el) {
             if(node.isWall) {
                 el.nativeElement.style.backgroundColor = this.wallColor;
+                //el.nativeElement.innerHTML = ``
                 el.nativeElement.style.borderColor = this.wallBorderColor
                 await this.sleep()
             } else {
@@ -34,9 +35,18 @@ export class ColorNode {
 
     }
 
-    reset(node: GraphNode, el:ElementRef) {
+    static startIcon() {
+        return `<i class="fa fa-solid fa-chevron-right" style="font-size: 10px;"></i>`
+    }
+    
+    static endIcon() {
+        return `<i class="fa fa-solid fa-bullseye" style="font-size: 10px;"></i>`
+    }
+
+    reset(node: GraphNode, el:ElementRef|undefined) {
         if(node && el) {
             el.nativeElement.style.backgroundColor = this.defaultColor;
+            //el.nativeElement.innerHTML = ``
             el.nativeElement.style.borderColor = this.defaultBorderColor;
         }
     }

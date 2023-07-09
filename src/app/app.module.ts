@@ -5,7 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PathfinderModule } from './pathfinder/pathfinder.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ToolbarComponent } from './toolbar/toolbar.component';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,8 +18,7 @@ import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    ToolbarComponent
+    AppComponent
   ],
   imports: [
     FormsModule,
