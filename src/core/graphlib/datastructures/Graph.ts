@@ -2,6 +2,7 @@ import { ElementRef } from "@angular/core"
 import { GraphNode } from "./GraphNode"
 import { GraphUndirectedEdge } from "./GraphUndirectedEdge"
 import { ColorNode } from "src/core/animate/ColorNode"
+import Queue from "./Queue"
 
 export class Graph {
     inProgress:boolean
@@ -9,18 +10,76 @@ export class Graph {
     rowLen: number
     nodes: Array<GraphNode>
     edges: GraphUndirectedEdge[]
-    source: GraphNode|null
-    destination: GraphNode|null
+    source: GraphNode
+    destination: GraphNode
 
-    constructor(nodes: Array<GraphNode>, edges: GraphUndirectedEdge[], source: GraphNode|null, destination: GraphNode|null) {
+    constructor(nodes: Array<GraphNode>, edges: GraphUndirectedEdge[]) {
         this.edges = edges
         this.nodes = nodes
-        this.source = source
-        this.destination = destination
         this.inProgress = false
         this.colLen = 0
         this.rowLen = 0
+        this.source = new GraphNode(-1, -1, false, false, null, [], 1, null)
+        this.destination = new GraphNode(-1, -1, false, false, null, [], 1, null)
     }
 
+    public computeNeighbours() {
+        let directions = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+        
+        for(let i = 0; i < this.nodes.length; i++) {
+            this.nodes[i].neighbours = new Array<GraphNode>()
+            if(i>=this.colLen && !this.nodes[i-this.colLen].isWall) this.nodes[i].neighbours.push(this.nodes[i-this.colLen]);
+            if(i < this.nodes.length - this.colLen && !this.nodes[i+this.colLen].isWall) this.nodes[i].neighbours.push(this.nodes[i+this.colLen]);
+            if(i%this.colLen != 0 && !this.nodes[i-1].isWall) this.nodes[i].neighbours.push(this.nodes[i-1]);
+            if((i == 0 || (i+1)%this.colLen != 0) && !this.nodes[i+1].isWall) this.nodes[i].neighbours.push(this.nodes[i+1]);
+        }
+    }
+
+    public computePath(tail: GraphNode|null, pathNodes: Array<GraphNode>) {
+        
+        let currentNode: GraphNode|null = tail
+
+        while(currentNode != null) {
+            pathNodes.push(currentNode)
+            currentNode = currentNode.parent
+        }
+
+        for(let i = 0; i<pathNodes.length; i++) {
+            console.log(pathNodes[i].id)
+        }
+    }
+
+    public breadthFirstSearch(visitedNodes: Array<GraphNode>){
+        if(this.source && this.destination) {
+            let q:Queue<GraphNode> = new Queue()
+            this.source.visited = true
+            
+            q.enqueue(this.source)
     
+            while(!q.isEmpty()){
+                let currentNode = q.dequeue()
+    
+                if(currentNode != null) {
+                    visitedNodes.push(currentNode)
+                    for(let i = 0; i<currentNode.neighbours.length; i++){
+                        let neighbourNode = currentNode.neighbours[i]
+        
+                        if(!neighbourNode.visited){
+                            neighbourNode.visited = true
+                            neighbourNode.parent = currentNode
+                            q.enqueue(neighbourNode)    
+        
+                            if(neighbourNode == this.destination) {
+                                while(!q.isEmpty()) {
+                                    let remainingNodeInQueue = q.dequeue()
+                                    remainingNodeInQueue != null ? visitedNodes.push(remainingNodeInQueue) : ``
+                                }
+                                return
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

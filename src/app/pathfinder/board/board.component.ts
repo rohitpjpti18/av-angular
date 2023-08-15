@@ -1,9 +1,10 @@
-import { Component, ContentChildren, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, Inject, QueryList, ViewChildren } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { pathfinder } from 'src/core/ngrx/menuoptions/menuoptions.actions';
 import { NodeDirective } from './node.directive';
 import { ColorNode } from 'src/core/animate/ColorNode';
 import { MazeAlgorithmsImpl } from 'src/core/graphlib/algorithms/MazeAlgorithmsImpl';
+import { BFS, SPLCOLOR_PATH } from 'src/core/common/Constants';
 
 
 @Component({
@@ -18,18 +19,21 @@ export class BoardComponent {
     
   algorithmMenu: string[] = []
   mazeMenu: string[] = []
-  selectedApplication: any;
+  selectedApplication: any
   colorNode: ColorNode
+  selectedPathFinder: string
 
   @ViewChildren(NodeDirective)
   nodes: QueryList<NodeDirective>|undefined
 
-  constructor(private store: Store<{menuOption: {algorithms: string[], mazePattern: string[]}}>) {
+  constructor(@Inject(Store) private store: Store<{menuOption: {algorithms: string[], mazePattern: string[]}}>) {
     this.rows = []
     this.columns = []
     this.cell = 'cell'
-    this.selectedApplication = "Select an Application"
+    
     this.colorNode = new ColorNode()
+    this.selectedPathFinder = `Choose an Algorithm`
+    this.selectedApplication = `${this.selectedPathFinder}`
     NodeDirective.colorNode = this.colorNode
     store.pipe(select('menuOption')).subscribe(data => {
       this.algorithmMenu = data.algorithms
@@ -43,8 +47,8 @@ export class BoardComponent {
     NodeDirective.graph.colLen = this.columns.length
     NodeDirective.graph.rowLen = this.rows.length
     NodeDirective.computeStartAndEnd()
-    NodeDirective.start.el.nativeElement.innerHTML = `S`
-    NodeDirective.end.el.nativeElement.innerHTML = `O`
+    NodeDirective.graph.source.el.nativeElement.innerHTML = `S`
+    NodeDirective.graph.destination.el.nativeElement.innerHTML = `O`
   }
 
   ngOnInit() {
@@ -78,19 +82,37 @@ export class BoardComponent {
   }
 
   resetBoard() {
-    NodeDirective.reset(this.colorNode)
+    NodeDirective.resetAll(this.colorNode)
   }
 
+  async pathFindingAlgorithm(event: Event) {
+    event.preventDefault()
+    const button = event.target as HTMLButtonElement;
+    NodeDirective.isProcessing = true
+    NodeDirective.resetForAlgo(this.colorNode)
+    
+    if(button.innerText === BFS) {
+      this.selectedPathFinder = BFS
+      NodeDirective.runBFS(true)
+    } else {
+      NodeDirective.resetAll(this.colorNode)
+    }
+  
+
+    NodeDirective.isProcessing = false
+  }
+
+  
   async mazeAlgorithm(event: MouseEvent) {
     const element = event.target as HTMLButtonElement;
     NodeDirective.isProcessing = true
-    NodeDirective.reset(this.colorNode)
+    NodeDirective.resetAll(this.colorNode)
     if(element.innerText === `Recursive division`) {
-      let walls:Array<number> = MazeAlgorithmsImpl.recursiveDivisionMaze(NodeDirective.graph, NodeDirective.col, NodeDirective.row, NodeDirective.start.id, NodeDirective.end.id);
+      let walls:Array<number> = MazeAlgorithmsImpl.recursiveDivisionMaze(NodeDirective.graph, NodeDirective.col, NodeDirective.row, NodeDirective.graph.source.id, NodeDirective.graph.destination.id);
       for(let i = 0; i< walls.length; i++) {
         if(this.nodes !== undefined)
           NodeDirective.setWall(NodeDirective.graph.nodes[walls[i]].id);
-          await this.colorNode.setColor(NodeDirective.graph.nodes[walls[i]], NodeDirective.graph.nodes[walls[i]].getHTMLElement() )
+          await this.colorNode.setColor(NodeDirective.graph.nodes[walls[i]], true)
       }
     }
     NodeDirective.isProcessing = false

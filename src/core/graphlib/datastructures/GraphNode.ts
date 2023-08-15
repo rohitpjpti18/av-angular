@@ -12,7 +12,7 @@ export class GraphNode {
     isWeighted: boolean;
     el:ElementRef
 
-    constructor(id:number, value: number, visited: boolean, weighted: boolean, parent: GraphNode|null, neighbourNodes: GraphNode[], weightValue: number, el:ElementRef) {
+    constructor(id:number, value: number, visited: boolean, weighted: boolean, parent: GraphNode|null, neighbourNodes: GraphNode[], weightValue: number, el:ElementRef|null) {
         this.id = id
         this.value = value;
         this.visited = visited;
@@ -22,7 +22,7 @@ export class GraphNode {
         this.weightValue = weightValue
         this.isWall = false
         this.isWeighted = false
-        this.el = el
+        this.el = el !== null ? el : new ElementRef(new Object()) 
     }
 
     getHTMLElement(){

@@ -1,5 +1,6 @@
-import { Directive, ElementRef, Host, HostListener, QueryList, ViewChildren } from '@angular/core';
+import { Directive, ElementRef, Host, HostListener, Inject, QueryList, ViewChildren } from '@angular/core';
 import { ColorNode } from 'src/core/animate/ColorNode';
+import { SPLCOLOR_PATH } from 'src/core/common/Constants';
 import { Graph } from 'src/core/graphlib/datastructures/Graph';
 import { GraphNode } from 'src/core/graphlib/datastructures/GraphNode';
 import { GraphUndirectedEdge } from 'src/core/graphlib/datastructures/GraphUndirectedEdge';
@@ -8,7 +9,6 @@ import { GraphUndirectedEdge } from 'src/core/graphlib/datastructures/GraphUndir
   selector: '[appNode]'
 })
 export class NodeDirective {
-  
   static isClicked = false
   static startSelected = false
   static endSelected = false
@@ -16,13 +16,11 @@ export class NodeDirective {
   static isProcessing = false
   static col: number
   static row: number
-  static graph:Graph = new Graph(new Array<GraphNode>(), new Array<GraphUndirectedEdge>(), null, null)
+  static graph:Graph = new Graph(new Array<GraphNode>(), new Array<GraphUndirectedEdge>())
   static colorNode:ColorNode = new ColorNode()
-  static start:GraphNode
-  static end: GraphNode
-  static visitedNodes: Array<GraphNode>
-  static wallNodes: Array<GraphNode>
-  static pathNodes: Array<GraphNode|undefined>
+  static visitedNodes: Array<GraphNode> = new Array<GraphNode>()
+  static wallNodes: Array<GraphNode> = new Array<GraphNode>()
+  static pathNodes: Array<GraphNode> = new Array<GraphNode>()
 
   static startIcon():string {
     return `S`
@@ -42,16 +40,14 @@ export class NodeDirective {
   }
 
   static setStart(start: GraphNode) {
-    NodeDirective.start = start
     NodeDirective.graph.source = start
-    NodeDirective.start.el.nativeElement.innerHTML = NodeDirective.startIcon();
+    NodeDirective.graph.source.el.nativeElement.innerHTML = NodeDirective.startIcon();
     NodeDirective.resetWall(start.id)
   }
 
   static setEnd(end: GraphNode) {
-    NodeDirective.end = end
     NodeDirective.graph.destination = end
-    NodeDirective.end.el.nativeElement.innerHTML = NodeDirective.endIcon();
+    NodeDirective.graph.destination.el.nativeElement.innerHTML = NodeDirective.endIcon();
     NodeDirective.resetWall(end.id)
   }
 
@@ -64,17 +60,17 @@ export class NodeDirective {
   }
 
   static setWall(i: number) {
-    if(NodeDirective.graph.nodes[i].id == NodeDirective.start.id || NodeDirective.graph.nodes[i].id == NodeDirective.end.id) return 
+    if(NodeDirective.graph.nodes[i].id === NodeDirective.graph.source.id || NodeDirective.graph.nodes[i].id === NodeDirective.graph.destination.id) return 
     NodeDirective.graph.nodes[i].isWall = true
   }
 
   static resetWall(i: number) {
-    if(NodeDirective.graph.nodes[i].id == NodeDirective.start.id || NodeDirective.graph.nodes[i].id == NodeDirective.end.id) return 
+    if(NodeDirective.graph.nodes[i].id == NodeDirective.graph.source.id || NodeDirective.graph.nodes[i].id === NodeDirective.graph.destination.id) return 
     NodeDirective.graph.nodes[i].isWall = false
   }
 
   static flipWall(i: number) {
-    if(NodeDirective.graph.nodes[i].id == NodeDirective.start.id || NodeDirective.graph.nodes[i].id == NodeDirective.end.id) return 
+    if(NodeDirective.graph.nodes[i].id == NodeDirective.graph.source.id || NodeDirective.graph.nodes[i].id === NodeDirective.graph.destination.id) return 
     if(NodeDirective.graph.nodes[i].isWall) {
       NodeDirective.resetWall(i)
     } else {
@@ -82,19 +78,38 @@ export class NodeDirective {
     }
   }
 
-  static reset(color:ColorNode) {
+  static resetAll(color:ColorNode) {
     for(let i = 0; i<NodeDirective.graph.nodes.length; i++) {
       NodeDirective.graph.nodes[i].reset();
-        color.setColor(NodeDirective.graph.nodes[i], NodeDirective.graph.nodes[i].el)
+      color.setColor(NodeDirective.graph.nodes[i], false)
     }
     NodeDirective.wallNodes = new Array()
     NodeDirective.visitedNodes = new Array()
     NodeDirective.pathNodes = new Array()
   }
 
+  static resetForAlgo(color:ColorNode) {
+    for(let i = 0; i<NodeDirective.graph.nodes.length; i++) {
+      NodeDirective.graph.nodes[i].visited = false
+      NodeDirective.graph.nodes[i].parent = null
+      color.setColor(NodeDirective.graph.nodes[i], false)
+    }
+    NodeDirective.visitedNodes = new Array<GraphNode>()
+    NodeDirective.pathNodes = new Array<GraphNode>()
+  }
+
   static getId(row: number, col: number) {
     return row*NodeDirective.col+col
   }
+
+  static async runBFS(delay:boolean) {
+    NodeDirective.graph.computeNeighbours()
+    NodeDirective.graph.breadthFirstSearch(NodeDirective.visitedNodes)
+    NodeDirective.graph.computePath(NodeDirective.graph.destination, NodeDirective.pathNodes)
+    for(let i = 0; i < NodeDirective.visitedNodes.length; i++) await this.colorNode.setColor(NodeDirective.visitedNodes[i], delay)
+    for(let i = NodeDirective.pathNodes.length-1; i >= 0; i--) await this.colorNode.setColor(NodeDirective.pathNodes[i], delay, SPLCOLOR_PATH)
+  }
+
 
   graphNode: GraphNode
   wasWall: boolean = false
@@ -102,7 +117,7 @@ export class NodeDirective {
   color: String
   id:number
 
-  constructor(private el:ElementRef) { 
+  constructor(@Inject(ElementRef) private el:ElementRef) { 
     this.color = 'blue'
     this.graphNode = new GraphNode(el.nativeElement.id, -1, false, false, null, [], 1, this.el)
     this.graphNode.isWall = false
@@ -113,8 +128,6 @@ export class NodeDirective {
     this.graphNode.id = this.el.nativeElement.id
     this.id = this.el.nativeElement.id
     NodeDirective.graph.nodes.push(this.graphNode)
-
-    let directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
   }
 
   @HostListener('mousedown', ['$event'])
@@ -137,15 +150,15 @@ export class NodeDirective {
     NodeDirective.isClicked = true
     if(!this.isStartNode() && !this.isEndNode()){
       NodeDirective.flipWall(this.graphNode.id)
-    } else if(NodeDirective.start.id == this.graphNode.id) {
+    } else if(NodeDirective.graph.source.id == this.graphNode.id) {
       NodeDirective.setStart(this.graphNode);
       NodeDirective.startSelected = true
-    } else if(NodeDirective.end.id == this.graphNode.id) {
+    } else if(NodeDirective.graph.destination.id == this.graphNode.id) {
       NodeDirective.setEnd(this.graphNode);
       NodeDirective.endSelected = true
     }
 
-    NodeDirective.colorNode.setColor(this.graphNode, this.el)
+    NodeDirective.colorNode.setColor(this.graphNode, false)
     //NodeDirective.start.el.nativeElement.innerHTML = NodeDirective.startIcon()
     //NodeDirective.end.el.nativeElement.innerHTML = NodeDirective.endIcon()
   }
@@ -168,7 +181,7 @@ export class NodeDirective {
       }
     }
 
-    NodeDirective.colorNode.setColor(this.graphNode, this.el)
+    NodeDirective.colorNode.setColor(this.graphNode, false)
   }
 
   @HostListener('mouseleave', ['$event'])
@@ -179,9 +192,9 @@ export class NodeDirective {
 
     if(NodeDirective.isClicked) {
       if( NodeDirective.endSelected) { 
-        this.graphNode.id == NodeDirective.start.id ? NodeDirective.setStart(this.graphNode) : this.el.nativeElement.innerHTML = NodeDirective.removeIcon()
+        this.graphNode.id == NodeDirective.graph.source.id ? NodeDirective.setStart(this.graphNode) : this.el.nativeElement.innerHTML = NodeDirective.removeIcon()
       } else if (NodeDirective.startSelected) {
-        this.graphNode.id == NodeDirective.end.id ? NodeDirective.setEnd(this.graphNode) : this.el.nativeElement.innerHTML = NodeDirective.removeIcon()
+        this.graphNode.id == NodeDirective.graph.destination.id ? NodeDirective.setEnd(this.graphNode) : this.el.nativeElement.innerHTML = NodeDirective.removeIcon()
       } 
       
       if(this.wasWall) {
@@ -189,7 +202,7 @@ export class NodeDirective {
         this.wasWall = false;
       }
     }
-    NodeDirective.colorNode.setColor(this.graphNode, this.el)
+    NodeDirective.colorNode.setColor(this.graphNode, false)
   }
 
   @HostListener('mouseup', ['$event'])
@@ -202,33 +215,33 @@ export class NodeDirective {
       this.graphNode.isWall = false;
       NodeDirective.startSelected = false
       if(this.isEndNode()) {
-        NodeDirective.start.el.nativeElement.innerHTML = NodeDirective.startIcon()
-        NodeDirective.end.el.nativeElement.innerHTML = NodeDirective.endIcon()
+        NodeDirective.graph.source.el.nativeElement.innerHTML = NodeDirective.startIcon()
+        NodeDirective.graph.destination.el.nativeElement.innerHTML = NodeDirective.endIcon()
       } else {
         this.el.nativeElement.innerHTML = NodeDirective.startIcon()
-        NodeDirective.start = this.graphNode;
+        NodeDirective.graph.source = this.graphNode;
       }
     }
     if(NodeDirective.endSelected) {
       this.graphNode.isWall = false;
       NodeDirective.endSelected = false;
       if(this.isStartNode()) {
-        NodeDirective.start.el.nativeElement.innerHTML = NodeDirective.startIcon()
-        NodeDirective.end.el.nativeElement.innerHTML = NodeDirective.endIcon()
+        NodeDirective.graph.source.el.nativeElement.innerHTML = NodeDirective.startIcon()
+        NodeDirective.graph.destination.el.nativeElement.innerHTML = NodeDirective.endIcon()
       } else {
         this.el.nativeElement.innerHTML = NodeDirective.endIcon()
-        NodeDirective.end = this.graphNode;
+        NodeDirective.graph.destination = this.graphNode;
       }
     }
-    NodeDirective.colorNode.setColor(this.graphNode, this.el)
+    NodeDirective.colorNode.setColor(this.graphNode, false)
   }
 
   isStartNode():boolean{
-    return this.id === NodeDirective.start.id
+    return this.id === NodeDirective.graph.source.id
   }
 
   isEndNode(): boolean {
-    return this.id === NodeDirective.end.id
+    return this.id === NodeDirective.graph.destination.id
   }
 }
 

@@ -1,5 +1,6 @@
 import { ElementRef } from "@angular/core";
 import { GraphNode } from "../graphlib/datastructures/GraphNode";
+import { SPLCOLOR_PATH } from "../common/Constants";
 
 export class ColorNode {
 
@@ -7,10 +8,10 @@ export class ColorNode {
     speed: number = 24;
     defaultColor: string = ``;
     defaultBorderColor: string = `#d8d1e8`;
-    wallColor: string = "#36235e";
-    wallBorderColor: string = `#36235e`;
-    visitedColor: string = "#96daeb";
-    pathColor: string = "#f5da7a";
+    wallColor: string = "#6b44bc";
+    wallBorderColor: string = `#6b44bc`;
+    visitedColor: string = "#f5da7a";
+    pathColor: string = "#79d2a6";
 
     setSpeed(value:number){
         this.speed=value
@@ -20,15 +21,21 @@ export class ColorNode {
         return new Promise(resolve => setTimeout(resolve,250/this.speed));
     }
 
-    async setColor(node: GraphNode|undefined, el: ElementRef|undefined) {
-        if(node && el) {
+    async setColor(node: GraphNode|undefined, delay:boolean, specificColor:string = ``) {
+        //console.log(specificColor)
+        if(node) {
             if(node.isWall) {
-                el.nativeElement.style.backgroundColor = this.wallColor;
-                //el.nativeElement.innerHTML = ``
-                el.nativeElement.style.borderColor = this.wallBorderColor
-                await this.sleep()
+                node.el.nativeElement.style.backgroundColor = this.wallColor;
+                node.el.nativeElement.style.borderColor = this.wallBorderColor
+                if(delay) await this.sleep()
+            } else if(specificColor === SPLCOLOR_PATH) {
+                node.el.nativeElement.style.backgroundColor = this.pathColor;
+                if(delay) await this.sleep()
+            } else if(node.visited) {
+                node.el.nativeElement.style.backgroundColor = this.visitedColor;
+                if(delay) await this.sleep()
             } else {
-                this.reset(node, el)
+                this.reset(node)
             }
         }
 
@@ -43,11 +50,10 @@ export class ColorNode {
         return `<i class="fa fa-solid fa-bullseye" style="font-size: 10px;"></i>`
     }
 
-    reset(node: GraphNode, el:ElementRef|undefined) {
-        if(node && el) {
-            el.nativeElement.style.backgroundColor = this.defaultColor;
-            //el.nativeElement.innerHTML = ``
-            el.nativeElement.style.borderColor = this.defaultBorderColor;
+    reset(node: GraphNode) {
+        if(node) {
+            node.el.nativeElement.style.backgroundColor = this.defaultColor
+            node.el.nativeElement.style.borderColor = this.defaultBorderColor
         }
     }
 }

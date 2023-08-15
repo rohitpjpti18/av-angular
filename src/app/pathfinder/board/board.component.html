@@ -1,6 +1,6 @@
 <mat-toolbar>
     <img src = '../../assets/testimage.ico' height="93" routerLink="/"/>
-    <button mat-flat-button color="primary" [matMenuTriggerFor]="application">{{selectedApplication}}</button>
+    <button mat-flat-button color="primary" [matMenuTriggerFor]="application">{{selectedPathFinder}}</button>
     <mat-menu #application>
         <button routerLink="/pathfinder" (click)="onClickHandler($event)" mat-menu-item class="example-icon" aria-label="Example icon-button with heart icon">
             Path Finder
@@ -13,7 +13,7 @@
     <div *ngIf="algorithmMenu">
     <button mat-button [matMenuTriggerFor]="menu">Select an Algorithms</button>
         <mat-menu #menu="matMenu">
-            <button (click)="mazeAlgorithm($event)" mat-menu-item *ngFor="let item of algorithmMenu" >
+            <button (click)="pathFindingAlgorithm($event)" mat-menu-item *ngFor="let item of algorithmMenu" >
                  {{ item }}
             </button>
         </mat-menu>
