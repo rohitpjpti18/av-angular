@@ -21,13 +21,14 @@ export class NodeDirective {
   static visitedNodes: Array<GraphNode> = new Array<GraphNode>()
   static wallNodes: Array<GraphNode> = new Array<GraphNode>()
   static pathNodes: Array<GraphNode> = new Array<GraphNode>()
+  static algoExecuted: boolean = false;
 
   static startIcon():string {
     return `S`
   }
 
   static endIcon():string {
-    return `O`
+    return `D`
   }
 
   static removeIcon():string {
@@ -78,7 +79,9 @@ export class NodeDirective {
     }
   }
 
+  // resets all the values of the nodes
   static resetAll(color:ColorNode) {
+    NodeDirective.algoExecuted = false
     for(let i = 0; i<NodeDirective.graph.nodes.length; i++) {
       NodeDirective.graph.nodes[i].reset();
       color.setColor(NodeDirective.graph.nodes[i], false)
@@ -88,10 +91,12 @@ export class NodeDirective {
     NodeDirective.pathNodes = new Array()
   }
 
+  // Resets only parent, path, visited values and keeps weights and wall values intact
   static resetForAlgo(color:ColorNode) {
     for(let i = 0; i<NodeDirective.graph.nodes.length; i++) {
       NodeDirective.graph.nodes[i].visited = false
       NodeDirective.graph.nodes[i].parent = null
+      NodeDirective.graph.nodes[i].path = false
       color.setColor(NodeDirective.graph.nodes[i], false)
     }
     NodeDirective.visitedNodes = new Array<GraphNode>()
@@ -103,11 +108,17 @@ export class NodeDirective {
   }
 
   static async runBFS(delay:boolean) {
+    NodeDirective.isProcessing = true
+    NodeDirective.algoExecuted = true
+    NodeDirective.resetForAlgo(NodeDirective.colorNode)
+
     NodeDirective.graph.computeNeighbours()
     NodeDirective.graph.breadthFirstSearch(NodeDirective.visitedNodes)
+    for(let i = 0; i < NodeDirective.visitedNodes.length; i++) await NodeDirective.colorNode.setColor(NodeDirective.visitedNodes[i], delay)
     NodeDirective.graph.computePath(NodeDirective.graph.destination, NodeDirective.pathNodes)
-    for(let i = 0; i < NodeDirective.visitedNodes.length; i++) await this.colorNode.setColor(NodeDirective.visitedNodes[i], delay)
-    for(let i = NodeDirective.pathNodes.length-1; i >= 0; i--) await this.colorNode.setColor(NodeDirective.pathNodes[i], delay, SPLCOLOR_PATH)
+    for(let i = NodeDirective.pathNodes.length-1; i >= 0; i--) await NodeDirective.colorNode.setColor(NodeDirective.pathNodes[i], delay)
+
+    NodeDirective.isProcessing = false
   }
 
 
@@ -159,8 +170,6 @@ export class NodeDirective {
     }
 
     NodeDirective.colorNode.setColor(this.graphNode, false)
-    //NodeDirective.start.el.nativeElement.innerHTML = NodeDirective.startIcon()
-    //NodeDirective.end.el.nativeElement.innerHTML = NodeDirective.endIcon()
   }
 
   
@@ -173,6 +182,16 @@ export class NodeDirective {
     
     if(NodeDirective.isClicked) {
       if(NodeDirective.startSelected || NodeDirective.endSelected) {
+
+        
+        if(NodeDirective.algoExecuted) {
+          if(NodeDirective.startSelected) NodeDirective.setStart(this.graphNode);
+          if(NodeDirective.endSelected) NodeDirective.setEnd(this.graphNode);
+          NodeDirective.colorNode.setColor(this.graphNode, false)
+          if(NodeDirective.graph.source.id !== NodeDirective.graph.destination.id) 
+            NodeDirective.runBFS(false);
+        }
+
         this.wasWall = this.graphNode.isWall
         NodeDirective.resetWall(this.graphNode.id)
         this.el.nativeElement.innerHTML = NodeDirective.startSelected ? NodeDirective.startIcon() : NodeDirective.endIcon()
