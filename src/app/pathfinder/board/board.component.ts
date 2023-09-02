@@ -47,8 +47,8 @@ export class BoardComponent {
     NodeDirective.graph.colLen = this.columns.length
     NodeDirective.graph.rowLen = this.rows.length
     NodeDirective.computeStartAndEnd()
-    NodeDirective.graph.source.el.nativeElement.innerHTML = `S`
-    NodeDirective.graph.destination.el.nativeElement.innerHTML = `O`
+    NodeDirective.graph.source.el.nativeElement.innerHTML = NodeDirective.startIcon()
+    NodeDirective.graph.destination.el.nativeElement.innerHTML = NodeDirective.endIcon()
   }
 
   ngOnInit() {
@@ -85,15 +85,13 @@ export class BoardComponent {
     NodeDirective.resetAll(this.colorNode)
   }
 
-  async pathFindingAlgorithm(event: Event) {
+  async algorithmRunHandler(event: Event) {
     event.preventDefault()
     const button = event.target as HTMLButtonElement;
     NodeDirective.isProcessing = true
-    NodeDirective.resetForAlgo(this.colorNode)
-    
     if(button.innerText === BFS) {
       this.selectedPathFinder = BFS
-      NodeDirective.runBFS(true)
+      await NodeDirective.runBFS(true)
     } else {
       NodeDirective.resetAll(this.colorNode)
     }
@@ -102,6 +100,11 @@ export class BoardComponent {
     NodeDirective.isProcessing = false
   }
 
+  handleAlgorithmSelection(event: MouseEvent) {
+    const element = event.target as HTMLButtonElement;
+    this.selectedPathFinder = element.innerText;
+  }
+ 
   
   async mazeAlgorithm(event: MouseEvent) {
     const element = event.target as HTMLButtonElement;

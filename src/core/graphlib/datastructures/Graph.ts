@@ -39,13 +39,12 @@ export class Graph {
         
         let currentNode: GraphNode|null = tail
 
+        if(currentNode == null || currentNode.parent == null) return
+
         while(currentNode != null) {
             pathNodes.push(currentNode)
+            currentNode.path = true
             currentNode = currentNode.parent
-        }
-
-        for(let i = 0; i<pathNodes.length; i++) {
-            console.log(pathNodes[i].id)
         }
     }
 
@@ -82,4 +81,6 @@ export class Graph {
             }
         }
     }
+
+
 }

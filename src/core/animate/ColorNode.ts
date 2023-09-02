@@ -7,18 +7,18 @@ export class ColorNode {
     // #6b44bc
     speed: number = 24;
     defaultColor: string = ``;
-    defaultBorderColor: string = `#d8d1e8`;
-    wallColor: string = "#6b44bc";
-    wallBorderColor: string = `#6b44bc`;
-    visitedColor: string = "#f5da7a";
-    pathColor: string = "#79d2a6";
+    defaultBorderColor: string = `#c5e2db`;
+    wallColor: string = "#4a5e58";
+    wallBorderColor: string = `#4a5e58`;
+    visitedColor: string = "#96daeb";
+    pathColor: string = "#f5da7a";
 
     setSpeed(value:number){
         this.speed=value
     }
 
     sleep(){
-        return new Promise(resolve => setTimeout(resolve,250/this.speed));
+        return new Promise(resolve => setTimeout(resolve,500/this.speed));
     }
 
     async setColor(node: GraphNode|undefined, delay:boolean, specificColor:string = ``) {
@@ -28,11 +28,13 @@ export class ColorNode {
                 node.el.nativeElement.style.backgroundColor = this.wallColor;
                 node.el.nativeElement.style.borderColor = this.wallBorderColor
                 if(delay) await this.sleep()
-            } else if(specificColor === SPLCOLOR_PATH) {
+            } else if(node.path) {
                 node.el.nativeElement.style.backgroundColor = this.pathColor;
+                node.el.nativeElement.style.borderColor = this.defaultColor;
                 if(delay) await this.sleep()
             } else if(node.visited) {
                 node.el.nativeElement.style.backgroundColor = this.visitedColor;
+                node.el.nativeElement.style.borderColor = this.defaultColor;
                 if(delay) await this.sleep()
             } else {
                 this.reset(node)

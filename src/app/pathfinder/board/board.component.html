@@ -1,19 +1,11 @@
 <mat-toolbar>
     <img src = '../../assets/testimage.ico' height="93" routerLink="/"/>
-    <button mat-flat-button color="primary" [matMenuTriggerFor]="application">{{selectedPathFinder}}</button>
-    <mat-menu #application>
-        <button routerLink="/pathfinder" (click)="onClickHandler($event)" mat-menu-item class="example-icon" aria-label="Example icon-button with heart icon">
-            Path Finder
-        </button>
-        <button routerLink="/" mat-menu-item (click)="onClickHandler($event)"  class="example-icon" aria-label="Example icon-button with heart icon">
-            Sorting Visualiser
-        </button>
-    </mat-menu>
+    <button mat-flat-button color="primary" (click)="algorithmRunHandler($event)">{{selectedPathFinder}}</button>
 
     <div *ngIf="algorithmMenu">
     <button mat-button [matMenuTriggerFor]="menu">Select an Algorithms</button>
         <mat-menu #menu="matMenu">
-            <button (click)="pathFindingAlgorithm($event)" mat-menu-item *ngFor="let item of algorithmMenu" >
+            <button (click)="handleAlgorithmSelection($event)" mat-menu-item *ngFor="let item of algorithmMenu" >
                  {{ item }}
             </button>
         </mat-menu>
@@ -30,13 +22,18 @@
     
     <span class="example-spacer"></span>
     <span style="font-size:small">Speed &nbsp;</span>
-    <mat-slider min="10" max="50" step="1" >
+    <mat-slider min="10" max="500" step="10" >
         <input matSliderThumb [(ngModel)]="colorNode.speed">
     </mat-slider>
 
     &nbsp;
     <button mat-flat-button color="warn" (click)="resetBoard()">Reset Board</button>
 </mat-toolbar>
+
+
+
+
+
 <div style="padding: 0.5%; width: 99%; height:95%; position: fixed;" #boardContainer id = 'boardContainer'>
     <div>
         <table >
@@ -46,9 +43,4 @@
             </tr>
         </table>
     </div>
-    
 </div>
-
-
-
-
