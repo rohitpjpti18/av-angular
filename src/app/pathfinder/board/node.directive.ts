@@ -1,6 +1,6 @@
 import { Directive, ElementRef, Host, HostListener, Inject, QueryList, ViewChildren } from '@angular/core';
 import { ColorNode } from 'src/core/animate/ColorNode';
-import { SPLCOLOR_PATH } from 'src/core/common/Constants';
+import { BFS, DFS, SPLCOLOR_PATH } from 'src/core/common/Constants';
 import { Graph } from 'src/core/graphlib/datastructures/Graph';
 import { GraphNode } from 'src/core/graphlib/datastructures/GraphNode';
 import { GraphUndirectedEdge } from 'src/core/graphlib/datastructures/GraphUndirectedEdge';
@@ -66,7 +66,7 @@ export class NodeDirective {
   }
 
   static resetWall(i: number) {
-    if(NodeDirective.graph.nodes[i].id == NodeDirective.graph.source.id || NodeDirective.graph.nodes[i].id === NodeDirective.graph.destination.id) return 
+    //if(NodeDirective.graph.nodes[i].id == NodeDirective.graph.source.id || NodeDirective.graph.nodes[i].id === NodeDirective.graph.destination.id) return 
     NodeDirective.graph.nodes[i].isWall = false
   }
 
@@ -107,13 +107,18 @@ export class NodeDirective {
     return row*NodeDirective.col+col
   }
 
-  static async runBFS(delay:boolean) {
+  static async runPathFinder(delay:boolean, algorithm:string) {
     NodeDirective.isProcessing = true
     NodeDirective.algoExecuted = true
     NodeDirective.resetForAlgo(NodeDirective.colorNode)
 
     NodeDirective.graph.computeNeighbours()
-    NodeDirective.graph.breadthFirstSearch(NodeDirective.visitedNodes)
+
+    if(algorithm == DFS) 
+      NodeDirective.graph.depthFirstSearch(NodeDirective.visitedNodes, NodeDirective.graph.source)
+    else
+      NodeDirective.graph.breadthFirstSearch(NodeDirective.visitedNodes)
+
     for(let i = 0; i < NodeDirective.visitedNodes.length; i++) await NodeDirective.colorNode.setColor(NodeDirective.visitedNodes[i], delay)
     NodeDirective.graph.computePath(NodeDirective.graph.destination, NodeDirective.pathNodes)
     for(let i = NodeDirective.pathNodes.length-1; i >= 0; i--) await NodeDirective.colorNode.setColor(NodeDirective.pathNodes[i], delay)
@@ -183,18 +188,19 @@ export class NodeDirective {
     if(NodeDirective.isClicked) {
       if(NodeDirective.startSelected || NodeDirective.endSelected) {
 
-        
+        this.wasWall = this.graphNode.isWall
+        NodeDirective.resetWall(this.graphNode.id)
+        this.el.nativeElement.innerHTML = NodeDirective.startSelected ? NodeDirective.startIcon() : NodeDirective.endIcon()
+
         if(NodeDirective.algoExecuted) {
           if(NodeDirective.startSelected) NodeDirective.setStart(this.graphNode);
           if(NodeDirective.endSelected) NodeDirective.setEnd(this.graphNode);
           NodeDirective.colorNode.setColor(this.graphNode, false)
           if(NodeDirective.graph.source.id !== NodeDirective.graph.destination.id) 
-            NodeDirective.runBFS(false);
+            NodeDirective.runPathFinder(false, BFS);
         }
 
-        this.wasWall = this.graphNode.isWall
-        NodeDirective.resetWall(this.graphNode.id)
-        this.el.nativeElement.innerHTML = NodeDirective.startSelected ? NodeDirective.startIcon() : NodeDirective.endIcon()
+
       } else {
         NodeDirective.flipWall(this.graphNode.id)
       }
@@ -217,7 +223,7 @@ export class NodeDirective {
       } 
       
       if(this.wasWall) {
-        NodeDirective.setWall(this.graphNode.id);
+        NodeDirective.graph.nodes[this.graphNode.id].isWall = true
         this.wasWall = false;
       }
     }

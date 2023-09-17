@@ -11,7 +11,7 @@ class Random{
     }
 
 
-    static generatedOddRandomNumber(lowerLimit:number, upperLimit:number): number{
+    static generateOddRandomNumber(lowerLimit:number, upperLimit:number): number{
         let random = Math.floor((Math.random()*(upperLimit-lowerLimit+2))+lowerLimit);
         if(random%2 === 0)
             return random-1;

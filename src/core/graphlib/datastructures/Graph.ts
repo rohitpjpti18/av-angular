@@ -48,7 +48,7 @@ export class Graph {
         }
     }
 
-    public breadthFirstSearch(visitedNodes: Array<GraphNode>){
+    public breadthFirstSearch(visitedNodes: Array<GraphNode>) {
         if(this.source && this.destination) {
             let q:Queue<GraphNode> = new Queue()
             this.source.visited = true
@@ -60,10 +60,10 @@ export class Graph {
     
                 if(currentNode != null) {
                     visitedNodes.push(currentNode)
-                    for(let i = 0; i<currentNode.neighbours.length; i++){
+                    for(let i = 0; i<currentNode.neighbours.length; i++) {
                         let neighbourNode = currentNode.neighbours[i]
         
-                        if(!neighbourNode.visited){
+                        if(!neighbourNode.visited) {
                             neighbourNode.visited = true
                             neighbourNode.parent = currentNode
                             q.enqueue(neighbourNode)    
@@ -83,4 +83,25 @@ export class Graph {
     }
 
 
+    public depthFirstSearch(visitedNodes: Array<GraphNode>, currentNode: GraphNode) {
+        if(!currentNode.visited) {
+            currentNode.visited = true
+            visitedNodes.push(currentNode)
+        }
+
+        if(currentNode == this.destination) {
+            return
+        }
+
+        for(let i = 0; i<currentNode.neighbours.length; i++) {
+            let neighbourNode = currentNode.neighbours[i]
+
+            if(!neighbourNode.visited){
+                neighbourNode.parent = currentNode
+                this.depthFirstSearch(visitedNodes, neighbourNode)
+            }
+
+            if(this.destination.visited) return
+        }
+    }
 }
