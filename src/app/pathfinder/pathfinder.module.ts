@@ -11,11 +11,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
 import { menuOptionReducer } from 'src/core/ngrx/menuoptions/menuoptions.reducer';
+import { PathfinderRoutingModule } from './pathfinder-routing.module';
 
-const pathfinderRoutes: Routes = [
-  {path: 'pathfinder', component: BoardComponent},
-  {path: '', component: BoardComponent}
-];
 
 @NgModule({
   declarations: [
@@ -30,8 +27,8 @@ const pathfinderRoutes: Routes = [
     MatButtonModule,
     MatSliderModule,
     MatMenuModule,
-    StoreModule.forRoot({menuOption: menuOptionReducer}, {}),
-    RouterModule.forChild(pathfinderRoutes)
+    PathfinderRoutingModule,
+    StoreModule.forRoot({menuOption: menuOptionReducer}, {})
   ]
 })
 export class PathfinderModule { }

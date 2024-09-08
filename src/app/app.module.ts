@@ -15,6 +15,7 @@ import { MatMenuModule } from '@angular/material/menu'
 import { StoreModule } from '@ngrx/store'
 import { menuOptionReducer } from 'src/core/ngrx/menuoptions/menuoptions.reducer';
 import { FormsModule } from '@angular/forms';
+import { PersonalSiteModule } from './personalsite/personalsite.module';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { FormsModule } from '@angular/forms';
     BrowserModule,
     AppRoutingModule,
     PathfinderModule,
+    PersonalSiteModule,
     BrowserAnimationsModule,
     MatToolbarModule,
     MatIconModule,
