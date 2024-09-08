@@ -21,6 +21,7 @@ import { PathfinderRoutingModule } from './pathfinder-routing.module';
   ],
   imports: [
     CommonModule,
+    PathfinderRoutingModule,
     FormsModule,
     MatToolbarModule,
     MatIconModule,
