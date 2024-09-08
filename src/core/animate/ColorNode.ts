@@ -1,14 +1,15 @@
 import { ElementRef } from "@angular/core";
 import { GraphNode } from "../graphlib/datastructures/GraphNode";
+import { SPLCOLOR_PATH } from "../common/Constants";
 
 export class ColorNode {
 
     // #6b44bc
     speed: number = 24;
     defaultColor: string = ``;
-    defaultBorderColor: string = `#d8d1e8`;
-    wallColor: string = "#36235e";
-    wallBorderColor: string = `#36235e`;
+    defaultBorderColor: string = `#c5e2db`;
+    wallColor: string = "#4a5e58";
+    wallBorderColor: string = `#4a5e58`;
     visitedColor: string = "#96daeb";
     pathColor: string = "#f5da7a";
 
@@ -17,27 +18,44 @@ export class ColorNode {
     }
 
     sleep(){
-        return new Promise(resolve => setTimeout(resolve,250/this.speed));
+        return new Promise(resolve => setTimeout(resolve,500/this.speed));
     }
 
-    async setColor(node: GraphNode|undefined, el: ElementRef|undefined) {
-        if(node && el) {
+    async setColor(node: GraphNode|undefined, delay:boolean, specificColor:string = ``) {
+        //console.log(specificColor)
+        if(node) {
             if(node.isWall) {
-                el.nativeElement.style.backgroundColor = this.wallColor;
-                el.nativeElement.style.borderColor = this.wallBorderColor
-                await this.sleep()
+                node.el.nativeElement.style.backgroundColor = this.wallColor;
+                node.el.nativeElement.style.borderColor = this.wallBorderColor
+                if(delay) await this.sleep()
+            } else if(node.path) {
+                node.el.nativeElement.style.backgroundColor = this.pathColor;
+                node.el.nativeElement.style.borderColor = this.defaultColor;
+                if(delay) await this.sleep()
+            } else if(node.visited) {
+                node.el.nativeElement.style.backgroundColor = this.visitedColor;
+                node.el.nativeElement.style.borderColor = this.defaultColor;
+                if(delay) await this.sleep()
             } else {
-                this.reset(node, el)
+                this.reset(node)
             }
         }
 
 
     }
 
-    reset(node: GraphNode, el:ElementRef) {
-        if(node && el) {
-            el.nativeElement.style.backgroundColor = this.defaultColor;
-            el.nativeElement.style.borderColor = this.defaultBorderColor;
+    static startIcon() {
+        return `<i class="fa fa-solid fa-chevron-right" style="font-size: 10px;"></i>`
+    }
+    
+    static endIcon() {
+        return `<i class="fa fa-solid fa-bullseye" style="font-size: 10px;"></i>`
+    }
+
+    reset(node: GraphNode) {
+        if(node) {
+            node.el.nativeElement.style.backgroundColor = this.defaultColor
+            node.el.nativeElement.style.borderColor = this.defaultBorderColor
         }
     }
 }

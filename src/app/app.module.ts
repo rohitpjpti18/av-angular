@@ -5,7 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PathfinderModule } from './pathfinder/pathfinder.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ToolbarComponent } from './toolbar/toolbar.component';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,17 +15,18 @@ import { MatMenuModule } from '@angular/material/menu'
 import { StoreModule } from '@ngrx/store'
 import { menuOptionReducer } from 'src/core/ngrx/menuoptions/menuoptions.reducer';
 import { FormsModule } from '@angular/forms';
+import { PersonalSiteModule } from './personalsite/personalsite.module';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    ToolbarComponent
+    AppComponent
   ],
   imports: [
     FormsModule,
     BrowserModule,
     AppRoutingModule,
     PathfinderModule,
+    PersonalSiteModule,
     BrowserAnimationsModule,
     MatToolbarModule,
     MatIconModule,
